@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { logger } from '../bootstrap/logger'
 import { AppError } from '../shared/errors/app-error'
+import { ValidationError } from '../shared/errors/validation-error'
 
 export function notFoundHandler(req: Request, res: Response): void {
   res.status(404).json({
@@ -22,6 +23,7 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
   res.status(statusCode).json({
     error: {
       message: err.message || 'Internal Server Error',
+      ...(err instanceof ValidationError && err.issues.length > 0 ? { issues: err.issues } : {}),
     },
   })
 }

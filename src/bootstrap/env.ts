@@ -18,6 +18,11 @@ export const env = {
   databaseUrl: requireEnv('DATABASE_URL'),
   databasePoolMax: parseInt(requireEnv('DATABASE_POOL_MAX', '10'), 10),
   databaseSlowQueryMs: parseInt(requireEnv('DATABASE_SLOW_QUERY_MS', '200'), 10),
+  jwtAccessSecret: requireEnv('JWT_ACCESS_SECRET'),
+  jwtRefreshSecret: requireEnv('JWT_REFRESH_SECRET'),
+  jwtAccessTtl: requireEnv('JWT_ACCESS_TTL', '15m'),
+  jwtRefreshTtl: requireEnv('JWT_REFRESH_TTL', '30d'),
+  emailHashSecret: requireEnv('EMAIL_HASH_SECRET'),
 }
 
 export const isProduction = env.nodeEnv === 'production'
