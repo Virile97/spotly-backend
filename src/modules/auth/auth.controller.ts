@@ -43,10 +43,8 @@ export async function refresh(req: Request, res: Response): Promise<void> {
   res.status(200).json({ tokens })
 }
 
-export async function me(req: Request, res: Response): Promise<void> {
-  const user = await authService.getCurrentUser(req.userId)
-
-  res.status(200).json({ user: toUserResponse(user) })
+export function me(req: Request, res: Response): void {
+  res.status(200).json({ user: toUserResponse(req.user) })
 }
 
 export async function logout(req: Request, res: Response): Promise<void> {

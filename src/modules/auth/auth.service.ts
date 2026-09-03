@@ -3,7 +3,6 @@ import { createHmac } from 'crypto'
 import { runInTransaction } from '../../database/transactions/transaction'
 import { Prisma, User } from '../../database/types'
 import { AppError } from '../../shared/errors/app-error'
-import { NotFoundError } from '../../shared/errors/not-found-error'
 import { authConfig } from '../../config/auth.config'
 import { logger } from '../../bootstrap/logger'
 import * as authRepository from './auth.repository'
@@ -130,12 +129,4 @@ export async function logout(refreshToken: string): Promise<void> {
   }
 
   await authRepository.revokeRefreshToken(stored.id)
-}
-
-export async function getCurrentUser(userId: string): Promise<User> {
-  const user = await authRepository.findUserById(userId)
-  if (!user || user.deletedAt) {
-    throw new NotFoundError('User not found')
-  }
-  return user
 }

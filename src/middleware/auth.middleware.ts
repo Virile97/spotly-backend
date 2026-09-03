@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
+import { findUserById } from '../database/repositories/user.repository'
+import { User } from '../database/types'
 import { verifyAccessToken } from '../modules/auth/auth.tokens'
 import { AppError } from '../shared/errors/app-error'
 
@@ -7,11 +9,16 @@ declare global {
   namespace Express {
     interface Request {
       userId: string
+      user: User
     }
   }
 }
 
-export function authMiddleware(req: Request, _res: Response, next: NextFunction): void {
+export async function authMiddleware(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): Promise<void> {
   const header = req.headers.authorization
 
   if (!header?.startsWith('Bearer ')) {
@@ -20,11 +27,19 @@ export function authMiddleware(req: Request, _res: Response, next: NextFunction)
 
   const token = header.slice('Bearer '.length)
 
+  let userId: string
   try {
-    const payload = verifyAccessToken(token)
-    req.userId = payload.sub
-    next()
+    userId = verifyAccessToken(token).sub
   } catch {
-    next(new AppError('Invalid or expired access token', 401))
+    return next(new AppError('Invalid or expired access token', 401))
   }
+
+  const user = await findUserById(userId)
+  if (!user || user.deletedAt || !user.isActive) {
+    return next(new AppError('Invalid or expired access token', 401))
+  }
+
+  req.userId = user.id
+  req.user = user
+  next()
 }

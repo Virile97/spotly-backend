@@ -23,7 +23,6 @@ vi.mock('../../../../src/modules/auth/auth.repository', () => ({
   findLoginByEmailHash: vi.fn(),
   findUserByNickname: vi.fn(),
   createUserWithLogin: vi.fn(),
-  findUserById: vi.fn(),
   createRefreshToken: vi.fn(),
 }))
 
@@ -80,7 +79,6 @@ describe('authService.register', () => {
     vi.mocked(authRepository.createUserWithLogin)
       .mockReset()
       .mockResolvedValue(createdUser as never)
-    vi.mocked(authRepository.findUserById).mockReset()
     vi.mocked(authRepository.createRefreshToken)
       .mockReset()
       .mockResolvedValue({} as never)

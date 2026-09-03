@@ -61,10 +61,6 @@ export function createUserWithLogin(
   })
 }
 
-export function findUserById(userId: string): Promise<User | null> {
-  return prisma.user.findUnique({ where: { id: userId } })
-}
-
 export function findUserByNickname(nickname: string): Promise<User | null> {
   return prisma.user.findUnique({ where: { nickname } })
 }
