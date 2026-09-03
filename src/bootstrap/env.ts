@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 
-dotenv.config()
+dotenv.config({ path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env' })
 
 function requireEnv(name: string, fallback?: string): string {
   const value = process.env[name] ?? fallback

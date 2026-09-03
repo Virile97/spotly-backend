@@ -17,6 +17,7 @@ export interface CreateUserWithLoginParams {
   middleName?: string
   lastName: string
   displayName: string
+  nickname?: string
   gender: Gender
   birthdate: Date
   contactNo?: string
@@ -36,6 +37,7 @@ export function createUserWithLogin(
       middleName: params.middleName,
       lastName: params.lastName,
       displayName: params.displayName,
+      nickname: params.nickname,
       gender: params.gender,
       birthdate: params.birthdate,
       contactNo: params.contactNo,
@@ -54,4 +56,8 @@ export function createUserWithLogin(
 
 export function findUserById(userId: string): Promise<User | null> {
   return prisma.user.findUnique({ where: { id: userId } })
+}
+
+export function findUserByNickname(nickname: string): Promise<User | null> {
+  return prisma.user.findUnique({ where: { nickname } })
 }

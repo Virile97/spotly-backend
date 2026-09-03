@@ -13,4 +13,11 @@ ADD COLUMN     "gender" "Gender" NOT NULL,
 ADD COLUMN     "is_active" BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN     "last_name" TEXT NOT NULL,
 ADD COLUMN     "marital_status" "MaritalStatus",
-ADD COLUMN     "middle_name" TEXT;
+ADD COLUMN     "middle_name" TEXT,
+ADD COLUMN     "nickname" TEXT;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_nickname_key" ON "users"("nickname");
+
+-- CreateIndex
+CREATE INDEX "users_is_active_idx" ON "users"("is_active");

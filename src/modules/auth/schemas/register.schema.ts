@@ -5,6 +5,14 @@ export const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   password: z.string().min(8).max(128),
   displayName: z.string().trim().min(1).max(80),
+  nickname: z
+    .string()
+    .trim()
+    .regex(
+      /^[a-zA-Z0-9_]{3,30}$/,
+      'Nickname must be 3-30 characters (letters, numbers, underscore)',
+    )
+    .optional(),
   firstName: z.string().trim().min(1).max(80),
   middleName: z.string().trim().min(1).max(80).optional(),
   lastName: z.string().trim().min(1).max(80),

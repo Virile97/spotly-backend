@@ -1,7 +1,7 @@
 import argon2 from 'argon2'
 import { createHmac } from 'crypto'
 import { runInTransaction } from '../../database/transactions/transaction'
-import { User } from '../../database/types'
+import { Prisma, User } from '../../database/types'
 import { AppError } from '../../shared/errors/app-error'
 import { NotFoundError } from '../../shared/errors/not-found-error'
 import { authConfig } from '../../config/auth.config'
@@ -18,28 +18,48 @@ function hashEmail(email: string): string {
 export async function register(dto: RegisterDto): Promise<{ user: User; tokens: AuthTokens }> {
   const emailHash = hashEmail(dto.email)
 
-  const existing = await authRepository.findLoginByEmailHash(emailHash)
-  if (existing) {
+  const existingEmail = await authRepository.findLoginByEmailHash(emailHash)
+  if (existingEmail) {
     throw new AppError('An account with this email already exists', 409)
+  }
+
+  if (dto.nickname) {
+    const existingNickname = await authRepository.findUserByNickname(dto.nickname)
+    if (existingNickname) {
+      throw new AppError('This nickname is already taken', 409)
+    }
   }
 
   const passwordHash = await argon2.hash(dto.password, authConfig.argon2)
 
-  const user = await runInTransaction((tx) =>
-    authRepository.createUserWithLogin(tx, {
-      firstName: dto.firstName,
-      middleName: dto.middleName,
-      lastName: dto.lastName,
-      displayName: dto.displayName,
-      gender: dto.gender,
-      birthdate: new Date(dto.birthdate),
-      contactNo: dto.contactNo,
-      address: dto.address,
-      maritalStatus: dto.maritalStatus,
-      emailHash,
-      passwordHash,
-    }),
-  )
+  let user: User
+  try {
+    user = await runInTransaction((tx) =>
+      authRepository.createUserWithLogin(tx, {
+        firstName: dto.firstName,
+        middleName: dto.middleName,
+        lastName: dto.lastName,
+        displayName: dto.displayName,
+        nickname: dto.nickname,
+        gender: dto.gender,
+        birthdate: new Date(dto.birthdate),
+        contactNo: dto.contactNo,
+        address: dto.address,
+        maritalStatus: dto.maritalStatus,
+        emailHash,
+        passwordHash,
+      }),
+    )
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      const target = (error.meta?.target as string[] | undefined) ?? []
+      if (target.includes('nickname')) {
+        throw new AppError('This nickname is already taken', 409)
+      }
+      throw new AppError('An account with this email already exists', 409)
+    }
+    throw error
+  }
 
   return { user, tokens: issueTokens(user.id) }
 }
