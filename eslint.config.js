@@ -1,7 +1,7 @@
-const js = require('@eslint/js');
-const tseslint = require('typescript-eslint');
-const eslintConfigPrettier = require('eslint-config-prettier');
-const eslintPluginPrettier = require('eslint-plugin-prettier');
+const js = require('@eslint/js')
+const tseslint = require('typescript-eslint')
+const eslintConfigPrettier = require('eslint-config-prettier')
+const eslintPluginPrettier = require('eslint-plugin-prettier')
 
 module.exports = tseslint.config(
   {
@@ -42,4 +42,4 @@ module.exports = tseslint.config(
     },
   },
   eslintConfigPrettier,
-);
+)

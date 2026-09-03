@@ -1,5 +1,5 @@
-import pino from 'pino';
-import { env, isDevelopment } from './env';
+import pino from 'pino'
+import { env, isDevelopment } from './env'
 
 export const logger = pino({
   level: env.logLevel,
@@ -9,4 +9,4 @@ export const logger = pino({
         options: { colorize: true, translateTime: 'SYS:standard' },
       }
     : undefined,
-});
+})

@@ -1,18 +1,18 @@
-import { Router } from 'express';
-import { isDatabaseHealthy } from '../bootstrap/database';
+import { Router } from 'express'
+import { isDatabaseHealthy } from '../bootstrap/database'
 
-export const healthRouter = Router();
+export const healthRouter = Router()
 
 healthRouter.get('/', (_req, res) => {
   res.status(200).json({
     status: 'ok',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-  });
-});
+  })
+})
 
 healthRouter.get('/ready', async (_req, res) => {
-  const databaseHealthy = await isDatabaseHealthy();
+  const databaseHealthy = await isDatabaseHealthy()
 
   res.status(databaseHealthy ? 200 : 503).json({
     status: databaseHealthy ? 'ok' : 'unavailable',
@@ -20,5 +20,5 @@ healthRouter.get('/ready', async (_req, res) => {
       database: databaseHealthy ? 'ok' : 'unavailable',
     },
     timestamp: new Date().toISOString(),
-  });
-});
+  })
+})

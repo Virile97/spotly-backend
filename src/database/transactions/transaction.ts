@@ -1,7 +1,7 @@
-import { prisma } from '../client';
-import type { Prisma } from '../generated/client/client';
+import { prisma } from '../client'
+import type { Prisma } from '../generated/client/client'
 
-export type TransactionClient = Prisma.TransactionClient;
+export type TransactionClient = Prisma.TransactionClient
 
 export function runInTransaction<T>(
   fn: (tx: TransactionClient) => Promise<T>,
@@ -10,5 +10,5 @@ export function runInTransaction<T>(
   return prisma.$transaction(fn, {
     maxWait: options?.maxWait ?? 5000,
     timeout: options?.timeout ?? 10000,
-  });
+  })
 }
