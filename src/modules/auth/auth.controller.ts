@@ -8,7 +8,14 @@ import { RegisterDto } from './dto/register.dto'
 function toUserResponse(user: User) {
   return {
     id: user.id,
+    firstName: user.firstName,
+    middleName: user.middleName,
+    lastName: user.lastName,
     displayName: user.displayName,
+    gender: user.gender,
+    birthdate: user.birthdate,
+    maritalStatus: user.maritalStatus,
+    isActive: user.isActive,
     bio: user.bio,
     avatarUrl: user.avatarUrl,
   }

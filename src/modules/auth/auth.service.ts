@@ -27,7 +27,15 @@ export async function register(dto: RegisterDto): Promise<{ user: User; tokens: 
 
   const user = await runInTransaction((tx) =>
     authRepository.createUserWithLogin(tx, {
+      firstName: dto.firstName,
+      middleName: dto.middleName,
+      lastName: dto.lastName,
       displayName: dto.displayName,
+      gender: dto.gender,
+      birthdate: new Date(dto.birthdate),
+      contactNo: dto.contactNo,
+      address: dto.address,
+      maritalStatus: dto.maritalStatus,
       emailHash,
       passwordHash,
     }),

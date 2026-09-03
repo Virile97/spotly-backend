@@ -1,5 +1,5 @@
 import { prisma } from '../../database/client'
-import { AuthProvider, User, UserLoginInfo } from '../../database/types'
+import { AuthProvider, Gender, MaritalStatus, User, UserLoginInfo } from '../../database/types'
 import { TransactionClient } from '../../database/transactions/transaction'
 
 export function findLoginByEmailHash(
@@ -12,17 +12,35 @@ export function findLoginByEmailHash(
   })
 }
 
+export interface CreateUserWithLoginParams {
+  firstName: string
+  middleName?: string
+  lastName: string
+  displayName: string
+  gender: Gender
+  birthdate: Date
+  contactNo?: string
+  address?: string
+  maritalStatus?: MaritalStatus
+  emailHash: string
+  passwordHash: string
+}
+
 export function createUserWithLogin(
   tx: TransactionClient,
-  params: {
-    displayName: string
-    emailHash: string
-    passwordHash: string
-  },
+  params: CreateUserWithLoginParams,
 ): Promise<User> {
   return tx.user.create({
     data: {
+      firstName: params.firstName,
+      middleName: params.middleName,
+      lastName: params.lastName,
       displayName: params.displayName,
+      gender: params.gender,
+      birthdate: params.birthdate,
+      contactNo: params.contactNo,
+      address: params.address,
+      maritalStatus: params.maritalStatus,
       loginInfos: {
         create: {
           authProvider: AuthProvider.EMAIL,

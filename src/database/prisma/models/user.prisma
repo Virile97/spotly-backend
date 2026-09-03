@@ -1,11 +1,32 @@
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+}
+
 model User {
-  id          String    @id @default(uuid())
-  displayName String    @map("display_name")
-  bio         String?
-  avatarUrl   String?   @map("avatar_url")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id            String         @id @default(uuid())
+  firstName     String         @map("first_name")
+  middleName    String?        @map("middle_name")
+  lastName      String         @map("last_name")
+  displayName   String         @map("display_name")
+  gender        Gender
+  birthdate     DateTime
+  contactNo     String?        @map("contact_no")
+  address       String?
+  maritalStatus MaritalStatus? @map("marital_status")
+  isActive      Boolean        @default(true) @map("is_active")
+  bio           String?
+  avatarUrl     String?        @map("avatar_url")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  deletedAt     DateTime?      @map("deleted_at")
 
   loginInfos UserLoginInfo[]
 
