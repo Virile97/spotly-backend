@@ -1,21 +1,15 @@
+import { randomBytes, createHash } from 'crypto'
 import jwt from 'jsonwebtoken'
+import ms from 'ms'
 import { authConfig } from '../../config/auth.config'
-import { AccessTokenPayload, AuthTokens, RefreshTokenPayload } from './types/auth.types'
+import { AccessTokenPayload } from './types/auth.types'
 
-export function issueTokens(userId: string): AuthTokens {
-  const accessToken = jwt.sign(
+export function issueAccessToken(userId: string): string {
+  return jwt.sign(
     { sub: userId, type: 'access' } satisfies AccessTokenPayload,
     authConfig.accessTokenSecret,
     { expiresIn: authConfig.accessTokenTtl } as jwt.SignOptions,
   )
-
-  const refreshToken = jwt.sign(
-    { sub: userId, type: 'refresh' } satisfies RefreshTokenPayload,
-    authConfig.refreshTokenSecret,
-    { expiresIn: authConfig.refreshTokenTtl } as jwt.SignOptions,
-  )
-
-  return { accessToken, refreshToken }
 }
 
 export function verifyAccessToken(token: string): AccessTokenPayload {
@@ -26,10 +20,14 @@ export function verifyAccessToken(token: string): AccessTokenPayload {
   return payload
 }
 
-export function verifyRefreshToken(token: string): RefreshTokenPayload {
-  const payload = jwt.verify(token, authConfig.refreshTokenSecret) as RefreshTokenPayload
-  if (payload.type !== 'refresh') {
-    throw new Error('Invalid token type')
-  }
-  return payload
+export function generateRefreshToken(): { token: string; tokenHash: string; expiresAt: Date } {
+  const token = randomBytes(48).toString('hex')
+  const tokenHash = hashRefreshToken(token)
+  const expiresAt = new Date(Date.now() + ms(authConfig.refreshTokenTtl as ms.StringValue))
+
+  return { token, tokenHash, expiresAt }
+}
+
+export function hashRefreshToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex')
 }

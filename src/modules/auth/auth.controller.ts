@@ -48,3 +48,10 @@ export async function me(req: Request, res: Response): Promise<void> {
 
   res.status(200).json({ user: toUserResponse(user) })
 }
+
+export async function logout(req: Request, res: Response): Promise<void> {
+  const dto = req.body as RefreshTokenDto
+  await authService.logout(dto.refreshToken)
+
+  res.status(204).send()
+}

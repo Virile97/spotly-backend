@@ -24,10 +24,17 @@ vi.mock('../../../../src/modules/auth/auth.repository', () => ({
   findUserByNickname: vi.fn(),
   createUserWithLogin: vi.fn(),
   findUserById: vi.fn(),
+  createRefreshToken: vi.fn(),
 }))
 
 vi.mock('../../../../src/modules/auth/auth.tokens', () => ({
-  issueTokens: vi.fn(() => ({ accessToken: 'access-token', refreshToken: 'refresh-token' })),
+  issueAccessToken: vi.fn(() => 'access-token'),
+  generateRefreshToken: vi.fn(() => ({
+    token: 'refresh-token',
+    tokenHash: 'refresh-token-hash',
+    expiresAt: new Date('2099-01-01'),
+  })),
+  hashRefreshToken: vi.fn((token: string) => `hash(${token})`),
 }))
 
 import * as authRepository from '../../../../src/modules/auth/auth.repository'
@@ -74,6 +81,9 @@ describe('authService.register', () => {
       .mockReset()
       .mockResolvedValue(createdUser as never)
     vi.mocked(authRepository.findUserById).mockReset()
+    vi.mocked(authRepository.createRefreshToken)
+      .mockReset()
+      .mockResolvedValue({} as never)
   })
 
   it('creates a user and returns tokens on valid input', async () => {
