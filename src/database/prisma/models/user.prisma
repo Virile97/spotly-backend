@@ -15,8 +15,7 @@ model User {
   firstName     String         @map("first_name")
   middleName    String?        @map("middle_name")
   lastName      String         @map("last_name")
-  displayName   String         @map("display_name")
-  nickname      String?        @unique
+  username      String?        @unique
   gender        Gender
   birthdate     DateTime
   contactNo     String?        @map("contact_no")

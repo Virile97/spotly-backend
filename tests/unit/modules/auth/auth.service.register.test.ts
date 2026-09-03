@@ -21,7 +21,7 @@ vi.mock('../../../../src/database/transactions/transaction', () => ({
 
 vi.mock('../../../../src/modules/auth/auth.repository', () => ({
   findLoginByEmailHash: vi.fn(),
-  findUserByNickname: vi.fn(),
+  findUserByUsername: vi.fn(),
   createUserWithLogin: vi.fn(),
   createRefreshToken: vi.fn(),
 }))
@@ -45,7 +45,6 @@ import { Prisma } from '../../../../src/database/types'
 const baseDto: RegisterDto = {
   email: 'alice@example.com',
   password: 'correcthorsebatterystaple',
-  displayName: 'Alice',
   firstName: 'Alice',
   lastName: 'Doe',
   gender: 'FEMALE',
@@ -57,8 +56,7 @@ const createdUser = {
   firstName: 'Alice',
   middleName: null,
   lastName: 'Doe',
-  displayName: 'Alice',
-  nickname: null,
+  username: null,
   gender: 'FEMALE',
   birthdate: new Date('1990-01-01'),
   contactNo: null,
@@ -75,7 +73,7 @@ const createdUser = {
 describe('authService.register', () => {
   beforeEach(() => {
     vi.mocked(authRepository.findLoginByEmailHash).mockReset().mockResolvedValue(null)
-    vi.mocked(authRepository.findUserByNickname).mockReset().mockResolvedValue(null)
+    vi.mocked(authRepository.findUserByUsername).mockReset().mockResolvedValue(null)
     vi.mocked(authRepository.createUserWithLogin)
       .mockReset()
       .mockResolvedValue(createdUser as never)
@@ -130,37 +128,37 @@ describe('authService.register', () => {
     expect(authRepository.createUserWithLogin).not.toHaveBeenCalled()
   })
 
-  it('rejects registration when the nickname is already taken', async () => {
-    vi.mocked(authRepository.findUserByNickname).mockResolvedValue(createdUser as never)
+  it('rejects registration when the username is already taken', async () => {
+    vi.mocked(authRepository.findUserByUsername).mockResolvedValue(createdUser as never)
 
-    await expect(authService.register({ ...baseDto, nickname: 'alice_doe' })).rejects.toMatchObject(
+    await expect(authService.register({ ...baseDto, username: 'alice_doe' })).rejects.toMatchObject(
       {
         statusCode: 409,
-        message: 'This nickname is already taken',
+        message: 'This username is already taken',
       },
     )
     expect(authRepository.createUserWithLogin).not.toHaveBeenCalled()
   })
 
-  it('skips the nickname lookup when no nickname is provided', async () => {
+  it('skips the username lookup when no username is provided', async () => {
     await authService.register(baseDto)
 
-    expect(authRepository.findUserByNickname).not.toHaveBeenCalled()
+    expect(authRepository.findUserByUsername).not.toHaveBeenCalled()
   })
 
-  it('surfaces a 409 nickname conflict from a concurrent unique-constraint violation', async () => {
+  it('surfaces a 409 username conflict from a concurrent unique-constraint violation', async () => {
     vi.mocked(authRepository.createUserWithLogin).mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
         code: 'P2002',
         clientVersion: '7.10.0',
-        meta: { target: ['nickname'] },
+        meta: { target: ['username'] },
       }),
     )
 
-    await expect(authService.register({ ...baseDto, nickname: 'alice_doe' })).rejects.toMatchObject(
+    await expect(authService.register({ ...baseDto, username: 'alice_doe' })).rejects.toMatchObject(
       {
         statusCode: 409,
-        message: 'This nickname is already taken',
+        message: 'This username is already taken',
       },
     )
   })

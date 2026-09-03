@@ -32,10 +32,10 @@ export async function register(dto: RegisterDto): Promise<{ user: User; tokens: 
     throw new AppError('An account with this email already exists', 409)
   }
 
-  if (dto.nickname) {
-    const existingNickname = await authRepository.findUserByNickname(dto.nickname)
-    if (existingNickname) {
-      throw new AppError('This nickname is already taken', 409)
+  if (dto.username) {
+    const existingUsername = await authRepository.findUserByUsername(dto.username)
+    if (existingUsername) {
+      throw new AppError('This username is already taken', 409)
     }
   }
 
@@ -48,8 +48,7 @@ export async function register(dto: RegisterDto): Promise<{ user: User; tokens: 
         firstName: dto.firstName,
         middleName: dto.middleName,
         lastName: dto.lastName,
-        displayName: dto.displayName,
-        nickname: dto.nickname,
+        username: dto.username,
         gender: dto.gender,
         birthdate: new Date(dto.birthdate),
         contactNo: dto.contactNo,
@@ -62,8 +61,8 @@ export async function register(dto: RegisterDto): Promise<{ user: User; tokens: 
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       const target = (error.meta?.target as string[] | undefined) ?? []
-      if (target.includes('nickname')) {
-        throw new AppError('This nickname is already taken', 409)
+      if (target.includes('username')) {
+        throw new AppError('This username is already taken', 409)
       }
       throw new AppError('An account with this email already exists', 409)
     }

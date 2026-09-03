@@ -4,7 +4,6 @@ import { registerSchema } from '../../../../src/modules/auth/schemas/register.sc
 const validPayload = {
   email: 'alice@example.com',
   password: 'correcthorsebatterystaple',
-  displayName: 'Alice',
   firstName: 'Alice',
   lastName: 'Doe',
   gender: 'FEMALE',
@@ -21,7 +20,7 @@ describe('registerSchema', () => {
     const result = registerSchema.safeParse({
       ...validPayload,
       middleName: 'Q',
-      nickname: 'alice_doe',
+      username: 'alice_doe',
       contactNo: '+63 917 123 4567',
       address: '123 Main St',
       maritalStatus: 'SINGLE',
@@ -55,13 +54,13 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects a nickname with invalid characters', () => {
-    const result = registerSchema.safeParse({ ...validPayload, nickname: 'not valid!' })
+  it('rejects a username with invalid characters', () => {
+    const result = registerSchema.safeParse({ ...validPayload, username: 'not valid!' })
     expect(result.success).toBe(false)
   })
 
-  it('rejects a nickname shorter than 3 characters', () => {
-    const result = registerSchema.safeParse({ ...validPayload, nickname: 'ab' })
+  it('rejects a username shorter than 3 characters', () => {
+    const result = registerSchema.safeParse({ ...validPayload, username: 'ab' })
     expect(result.success).toBe(false)
   })
 

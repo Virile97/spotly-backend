@@ -23,8 +23,7 @@ export interface CreateUserWithLoginParams {
   firstName: string
   middleName?: string
   lastName: string
-  displayName: string
-  nickname?: string
+  username?: string
   gender: Gender
   birthdate: Date
   contactNo?: string
@@ -43,8 +42,7 @@ export function createUserWithLogin(
       firstName: params.firstName,
       middleName: params.middleName,
       lastName: params.lastName,
-      displayName: params.displayName,
-      nickname: params.nickname,
+      username: params.username,
       gender: params.gender,
       birthdate: params.birthdate,
       contactNo: params.contactNo,
@@ -61,8 +59,8 @@ export function createUserWithLogin(
   })
 }
 
-export function findUserByNickname(nickname: string): Promise<User | null> {
-  return prisma.user.findUnique({ where: { nickname } })
+export function findUserByUsername(username: string): Promise<User | null> {
+  return prisma.user.findUnique({ where: { username } })
 }
 
 export function createRefreshToken(params: {
