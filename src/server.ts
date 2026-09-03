@@ -1,3 +1,7 @@
+import { initSentry, captureError } from './bootstrap/sentry'
+
+initSentry()
+
 import { createApp } from './app'
 import { connectDatabase, disconnectDatabase } from './bootstrap/database'
 import { logger } from './bootstrap/logger'
@@ -25,7 +29,20 @@ async function bootstrap(): Promise<void> {
   process.on('SIGINT', () => void shutdown('SIGINT'))
 }
 
+process.on('unhandledRejection', (reason) => {
+  const error = reason instanceof Error ? reason : new Error(String(reason))
+  logger.error({ error }, 'Unhandled promise rejection')
+  captureError(error, { route: 'process.unhandledRejection' })
+})
+
+process.on('uncaughtException', (error) => {
+  logger.error({ error }, 'Uncaught exception')
+  captureError(error, { route: 'process.uncaughtException' })
+  process.exit(1)
+})
+
 bootstrap().catch((error) => {
   logger.error({ error }, 'Failed to start server')
+  captureError(error, { route: 'server.bootstrap' })
   process.exit(1)
 })

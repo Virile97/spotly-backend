@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { logger } from '../bootstrap/logger'
+import { captureError } from '../bootstrap/sentry'
 import { AppError } from '../shared/errors/app-error'
 import { ValidationError } from '../shared/errors/validation-error'
 
@@ -16,6 +17,13 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
 
   if (statusCode >= 500) {
     logger.error({ err, requestId: req.requestId }, 'Unhandled error')
+    captureError(err, {
+      requestId: req.requestId,
+      route: req.route?.path ?? req.originalUrl,
+      method: req.method,
+      statusCode,
+      userId: req.userId,
+    })
   } else {
     logger.warn({ err, requestId: req.requestId }, 'Request error')
   }

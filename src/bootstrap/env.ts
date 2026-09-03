@@ -10,6 +10,10 @@ function requireEnv(name: string, fallback?: string): string {
   return value
 }
 
+function optionalEnv(name: string): string | undefined {
+  return process.env[name] || undefined
+}
+
 export const env = {
   nodeEnv: requireEnv('NODE_ENV', 'development'),
   port: parseInt(requireEnv('PORT', '3000'), 10),
@@ -23,6 +27,9 @@ export const env = {
   jwtAccessTtl: requireEnv('JWT_ACCESS_TTL', '15m'),
   jwtRefreshTtl: requireEnv('JWT_REFRESH_TTL', '30d'),
   emailHashSecret: requireEnv('EMAIL_HASH_SECRET'),
+  spotlyApiKey: requireEnv('SPOTLY_API_KEY'),
+  sentryDsn: optionalEnv('SENTRY_DSN'),
+  sentryTracesSampleRate: parseFloat(requireEnv('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
 }
 
 export const isProduction = env.nodeEnv === 'production'
