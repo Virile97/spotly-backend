@@ -1,13 +1,13 @@
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
 function requireEnv(name: string, fallback?: string): string {
-  const value = process.env[name] ?? fallback
+  const value = process.env[name] ?? fallback;
   if (value === undefined) {
-    throw new Error(`Missing required environment variable: ${name}`)
+    throw new Error(`Missing required environment variable: ${name}`);
   }
-  return value
+  return value;
 }
 
 export const env = {
@@ -18,8 +18,8 @@ export const env = {
   databaseUrl: requireEnv('DATABASE_URL'),
   databasePoolMax: parseInt(requireEnv('DATABASE_POOL_MAX', '10'), 10),
   databaseSlowQueryMs: parseInt(requireEnv('DATABASE_SLOW_QUERY_MS', '200'), 10),
-}
+};
 
-export const isProduction = env.nodeEnv === 'production'
-export const isDevelopment = env.nodeEnv === 'development'
-export const isTest = env.nodeEnv === 'test'
+export const isProduction = env.nodeEnv === 'production';
+export const isDevelopment = env.nodeEnv === 'development';
+export const isTest = env.nodeEnv === 'test';

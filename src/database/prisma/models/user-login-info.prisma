@@ -1,0 +1,20 @@
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+}
+
+model UserLoginInfo {
+  id           String       @id @default(uuid())
+  userId       String       @map("user_id")
+  authProvider AuthProvider @map("auth_provider")
+  emailHash    String       @map("email_hash")
+  passwordHash String?      @map("password_hash")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([authProvider, emailHash])
+  @@index([userId])
+  @@map("user_login_info")
+}
