@@ -10,6 +10,7 @@ export const updateProfileSchema = z
         /^[a-zA-Z0-9_]{3,30}$/,
         'Username must be 3-30 characters (letters, numbers, underscore)',
       ),
+    displayName: z.string().trim().min(1).max(20).nullable(),
     firstName: z.string().trim().min(1).max(80),
     middleName: z.string().trim().min(1).max(80).nullable(),
     lastName: z.string().trim().min(1).max(80),

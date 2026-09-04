@@ -26,6 +26,7 @@ import { AppError } from '../../../../src/shared/errors/app-error'
 const baseUser = {
   id: 'user-1',
   username: 'alice_doe',
+  displayName: 'Alice D.',
   firstName: 'Alice',
   middleName: null,
   lastName: 'Doe',
@@ -48,6 +49,7 @@ describe('toProfileResponse', () => {
     expect(result).toEqual({
       id: 'user-1',
       username: 'alice_doe',
+      displayName: 'Alice D.',
       firstName: 'Alice',
       middleName: null,
       lastName: 'Doe',
@@ -119,6 +121,14 @@ describe('profileService.updateProfile', () => {
 
     expect(profileRepository.updateProfile).toHaveBeenCalledWith('user-1', { bio: 'new bio' })
     expect(result).toEqual(baseUser)
+  })
+
+  it('updates the display name', async () => {
+    await profileService.updateProfile('user-1', { displayName: 'New Name' })
+
+    expect(profileRepository.updateProfile).toHaveBeenCalledWith('user-1', {
+      displayName: 'New Name',
+    })
   })
 
   it('emits a profile.updated event to the user room with the updated profile', async () => {

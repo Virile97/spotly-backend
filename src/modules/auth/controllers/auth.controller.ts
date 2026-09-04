@@ -12,6 +12,7 @@ function toUserResponse(user: User) {
     firstName: user.firstName,
     middleName: user.middleName,
     lastName: user.lastName,
+    displayName: user.displayName,
     username: user.username,
     gender: user.gender,
     birthdate: user.birthdate,

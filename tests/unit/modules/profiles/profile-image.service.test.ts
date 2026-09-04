@@ -24,6 +24,7 @@ import * as profileImageService from '../../../../src/modules/profiles/services/
 const baseUser = {
   id: 'user-1',
   username: 'alice_doe',
+  displayName: null,
   firstName: 'Alice',
   middleName: null,
   lastName: 'Doe',

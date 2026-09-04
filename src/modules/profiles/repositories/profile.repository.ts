@@ -14,6 +14,7 @@ export function findUserByUsernameExcludingId(
 
 export interface UpdateProfileParams {
   username?: string
+  displayName?: string | null
   firstName?: string
   middleName?: string | null
   lastName?: string

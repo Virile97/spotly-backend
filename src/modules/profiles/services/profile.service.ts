@@ -11,6 +11,7 @@ import { ProfileSocketEvent } from './profile.events'
 export interface ProfileResponse {
   id: string
   username: string | null
+  displayName: string | null
   firstName: string
   middleName: string | null
   lastName: string
@@ -28,6 +29,7 @@ export function toProfileResponse(user: User): ProfileResponse {
   return {
     id: user.id,
     username: user.username,
+    displayName: user.displayName,
     firstName: user.firstName,
     middleName: user.middleName,
     lastName: user.lastName,

@@ -46,6 +46,7 @@ const user = {
   middleName: null,
   lastName: 'Doe',
   username: null,
+  displayName: null,
   gender: 'FEMALE',
   birthdate: new Date('1990-01-01'),
   contactNo: null,

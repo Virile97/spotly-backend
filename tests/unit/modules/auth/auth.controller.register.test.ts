@@ -21,6 +21,7 @@ const user = {
   middleName: null,
   lastName: 'Doe',
   username: 'alice_doe',
+  displayName: 'Alice D.',
   gender: 'FEMALE',
   birthdate: new Date('1990-01-01'),
   contactNo: '+639171234567',
