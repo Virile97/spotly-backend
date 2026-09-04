@@ -3,7 +3,13 @@ dist
 coverage
 .env
 .env.test
-.env.docker
+.env.example
 *.log
 .DS_Store
 src/database/generated
+.git
+.github
+docker
+docker-compose*.yml
+Dockerfile
+README.md

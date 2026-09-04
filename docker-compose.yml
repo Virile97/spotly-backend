@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: spotly
+      POSTGRES_PASSWORD: spotly
+      POSTGRES_DB: spotly_development
+    ports:
+      - '5432:5432'
+    volumes:
+      - spotly-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U spotly -d spotly_development']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      target: dev
+    env_file:
+      - .env.docker
+    ports:
+      - '3001:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/src/database/generated
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+
+volumes:
+  spotly-postgres-data:
