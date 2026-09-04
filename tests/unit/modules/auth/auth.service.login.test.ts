@@ -146,8 +146,8 @@ describe('authService.login', () => {
     vi.mocked(authRepository.findLoginByEmailHash).mockResolvedValue(null)
 
     await expect(authService.login(loginDto)).rejects.toMatchObject({
-      statusCode: 401,
-      message: 'Invalid email or password',
+      statusCode: 404,
+      message: 'Account not found',
     })
   })
 

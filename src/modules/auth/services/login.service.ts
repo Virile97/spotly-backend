@@ -16,7 +16,11 @@ export async function login(dto: LoginDto): Promise<{ user: User; tokens: AuthTo
   const emailHash = hashEmail(dto.email)
   const loginInfo = await authRepository.findLoginByEmailHash(emailHash)
 
-  if (!loginInfo || !loginInfo.passwordHash) {
+  if (!loginInfo) {
+    throw new AppError('Account not found', 404)
+  }
+
+  if (!loginInfo.passwordHash) {
     throw new AppError('Invalid email or password', 401)
   }
 

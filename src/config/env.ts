@@ -18,7 +18,7 @@ export const env = {
   nodeEnv: requireEnv('NODE_ENV', 'development'),
   port: parseInt(requireEnv('PORT', '3000'), 10),
   logLevel: requireEnv('LOG_LEVEL', 'info'),
-  corsOrigin: requireEnv('CORS_ORIGIN', 'http://localhost:3000'),
+  corsOrigin: requireEnv('CORS_ORIGIN', 'http://localhost:3001'),
   databaseUrl: requireEnv('DATABASE_URL'),
   databasePoolMax: parseInt(requireEnv('DATABASE_POOL_MAX', '10'), 10),
   databaseSlowQueryMs: parseInt(requireEnv('DATABASE_SLOW_QUERY_MS', '200'), 10),
