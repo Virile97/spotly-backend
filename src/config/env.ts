@@ -31,13 +31,14 @@ export const env = {
   publicWebBaseUrl: requireEnv('PUBLIC_WEB_BASE_URL', 'https://spotly.app'),
   sentryDsn: optionalEnv('SENTRY_DSN'),
   sentryTracesSampleRate: parseFloat(requireEnv('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
-  redisUrl: optionalEnv('REDIS_URL'),
+  redisUrl: requireEnv('REDIS_URL', 'redis://localhost:6379'),
   socketCorsOrigin: optionalEnv('SOCKET_CORS_ORIGIN'),
   storageEndpoint: optionalEnv('STORAGE_ENDPOINT'),
   storageBucket: optionalEnv('STORAGE_BUCKET'),
   storageAccessKeyId: optionalEnv('STORAGE_ACCESS_KEY_ID'),
   storageSecretAccessKey: optionalEnv('STORAGE_SECRET_ACCESS_KEY'),
-  storagePublicBaseUrl: optionalEnv('MEDIA_PUBLIC_BASE_URL') ?? optionalEnv('STORAGE_PUBLIC_BASE_URL'),
+  storagePublicBaseUrl:
+    optionalEnv('MEDIA_PUBLIC_BASE_URL') ?? optionalEnv('STORAGE_PUBLIC_BASE_URL'),
   queueRedisUrl: optionalEnv('QUEUE_REDIS_URL'),
 }
 
