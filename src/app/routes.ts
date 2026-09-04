@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { isDatabaseHealthy } from '../infrastructure/database/prisma'
 import { apiKeyMiddleware } from '../shared/middleware/api-key.middleware'
 import { authRouter } from '../modules/auth'
+import { interestRouter } from '../modules/interests'
 import { profileRouter } from '../modules/profiles'
 
 export const apiRouter = Router()
@@ -31,3 +32,4 @@ healthRouter.get('/ready', async (_req, res) => {
 apiRouter.use('/health', healthRouter)
 apiRouter.use('/auth', apiKeyMiddleware, authRouter)
 apiRouter.use('/profiles', apiKeyMiddleware, profileRouter)
+apiRouter.use('/interests', apiKeyMiddleware, interestRouter)

@@ -11,7 +11,7 @@ import * as profileRepository from '../repositories/profile.repository'
 import { ImageUploadUrlDto } from '../dto/image-upload-url.dto'
 import { ConfirmImageDto } from '../dto/confirm-image.dto'
 import { ProfileSocketEvent } from './profile.events'
-import { toProfileResponse } from './profile.service'
+import { buildProfileResponse } from './profile.service'
 
 const FOLDER_BY_TYPE: Record<ImageUploadUrlDto['type'], string> = {
   avatar: 'avatars',
@@ -47,7 +47,7 @@ export async function confirmImageUpload(userId: string, dto: ConfirmImageDto): 
 
   const user = await profileRepository.updateProfileImage(userId, field, dto.key)
 
-  emitToRoom(userRoom(userId), ProfileSocketEvent.ProfileUpdated, toProfileResponse(user))
+  emitToRoom(userRoom(userId), ProfileSocketEvent.ProfileUpdated, await buildProfileResponse(user))
 
   return user
 }

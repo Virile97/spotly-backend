@@ -12,6 +12,11 @@ vi.mock('../../../../src/infrastructure/websocket/socket-emitter', () => ({
   emitToRoom: vi.fn(),
 }))
 
+vi.mock('../../../../src/modules/interests/services/interest.service', () => ({
+  getUserInterests: vi.fn().mockResolvedValue([]),
+  toInterestResponse: vi.fn((interest: { id: string; name: string; icon: string }) => interest),
+}))
+
 vi.mock('../../../../src/modules/profiles/repositories/profile.repository', () => ({
   updateProfileImage: vi.fn(),
 }))

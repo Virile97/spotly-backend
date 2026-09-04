@@ -1,0 +1,23 @@
+model Interest {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  icon      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  users UserInterest[]
+
+  @@map("interests")
+}
+
+model UserInterest {
+  userId     String   @map("user_id")
+  interestId String   @map("interest_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, interestId])
+  @@index([interestId])
+  @@map("user_interests")
+}

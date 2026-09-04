@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { setUserInterestsSchema } from '../../interests/schemas/set-user-interests.schema'
 import { authMiddleware } from '../../../shared/middleware/auth.middleware'
 import { validate } from '../../../shared/middleware/validate.middleware'
 import * as profileController from '../controllers/profile.controller'
@@ -21,6 +22,11 @@ profileRouter.patch(
   '/me/image',
   validate({ body: confirmImageSchema }),
   profileController.confirmImage,
+)
+profileRouter.put(
+  '/me/interests',
+  validate({ body: setUserInterestsSchema }),
+  profileController.setInterests,
 )
 profileRouter.get('/:username/share', profileController.share)
 profileRouter.get('/:username', profileController.getByUsername)

@@ -38,6 +38,7 @@ model User {
   posts         Post[]
   followedBy    Follow[]        @relation("Following")
   following     Follow[]        @relation("Follower")
+  interests     UserInterest[]
 
   @@index([deletedAt])
   @@index([isActive])

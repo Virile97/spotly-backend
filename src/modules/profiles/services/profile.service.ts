@@ -1,7 +1,14 @@
 import { appConfig } from '../../../config/app.config'
+import { findUserById } from '../../../database/repositories/user.repository'
 import { User } from '../../../database/types'
 import { emitToRoom } from '../../../infrastructure/websocket/socket-emitter'
 import { toPublicImageUrl } from '../../../infrastructure/storage/storage.service'
+import {
+  getUserInterests,
+  InterestResponse,
+  setUserInterests as setUserInterestsInternal,
+  toInterestResponse,
+} from '../../interests/services/interest.service'
 import { userRoom } from '../../messaging/socket/socket.rooms'
 import { AppError } from '../../../shared/errors/app-error'
 import * as profileRepository from '../repositories/profile.repository'
@@ -23,9 +30,10 @@ export interface ProfileResponse {
   postsCount: number
   isActive: boolean
   createdAt: Date
+  interests: InterestResponse[]
 }
 
-export function toProfileResponse(user: User): ProfileResponse {
+export function toProfileResponse(user: User, interests: InterestResponse[] = []): ProfileResponse {
   return {
     id: user.id,
     username: user.username,
@@ -41,7 +49,13 @@ export function toProfileResponse(user: User): ProfileResponse {
     postsCount: user.postsCount,
     isActive: user.isActive,
     createdAt: user.createdAt,
+    interests,
   }
+}
+
+export async function buildProfileResponse(user: User): Promise<ProfileResponse> {
+  const interests = await getUserInterests(user.id)
+  return toProfileResponse(user, interests.map(toInterestResponse))
 }
 
 export async function getProfileByUsername(username: string): Promise<User> {
@@ -62,7 +76,7 @@ export async function updateProfile(userId: string, dto: UpdateProfileDto): Prom
 
   const user = await profileRepository.updateProfile(userId, dto)
 
-  emitToRoom(userRoom(userId), ProfileSocketEvent.ProfileUpdated, toProfileResponse(user))
+  emitToRoom(userRoom(userId), ProfileSocketEvent.ProfileUpdated, await buildProfileResponse(user))
 
   return user
 }
@@ -77,4 +91,22 @@ export async function getProfileForShare(username: string): Promise<{ url: strin
     throw new AppError('Profile not found', 404)
   }
   return getShareUrl(username)
+}
+
+export async function setUserInterests(
+  userId: string,
+  interestIds: string[],
+): Promise<InterestResponse[]> {
+  const interests = await setUserInterestsInternal(userId, interestIds)
+
+  const user = await findUserById(userId)
+  if (user) {
+    emitToRoom(
+      userRoom(userId),
+      ProfileSocketEvent.ProfileUpdated,
+      await buildProfileResponse(user),
+    )
+  }
+
+  return interests.map(toInterestResponse)
 }

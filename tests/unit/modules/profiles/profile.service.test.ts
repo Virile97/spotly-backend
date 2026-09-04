@@ -12,13 +12,28 @@ vi.mock('../../../../src/infrastructure/websocket/socket-emitter', () => ({
   emitToRoom: vi.fn(),
 }))
 
+vi.mock('../../../../src/database/repositories/user.repository', () => ({
+  findUserById: vi.fn(),
+}))
+
+vi.mock('../../../../src/modules/interests/services/interest.service', () => ({
+  getUserInterests: vi.fn().mockResolvedValue([]),
+  setUserInterests: vi.fn(),
+  toInterestResponse: vi.fn((interest: { id: string; name: string; icon: string }) => interest),
+}))
+
 vi.mock('../../../../src/modules/profiles/repositories/profile.repository', () => ({
   findProfileByUsername: vi.fn(),
   findUserByUsernameExcludingId: vi.fn(),
   updateProfile: vi.fn(),
 }))
 
+import { findUserById } from '../../../../src/database/repositories/user.repository'
 import { emitToRoom } from '../../../../src/infrastructure/websocket/socket-emitter'
+import {
+  getUserInterests,
+  setUserInterests as setUserInterestsInternal,
+} from '../../../../src/modules/interests/services/interest.service'
 import * as profileRepository from '../../../../src/modules/profiles/repositories/profile.repository'
 import * as profileService from '../../../../src/modules/profiles/services/profile.service'
 import { AppError } from '../../../../src/shared/errors/app-error'
@@ -61,6 +76,7 @@ describe('toProfileResponse', () => {
       postsCount: 86,
       isActive: true,
       createdAt: baseUser.createdAt,
+      interests: [],
     })
   })
 
@@ -114,6 +130,7 @@ describe('profileService.updateProfile', () => {
       .mockReset()
       .mockResolvedValue(baseUser as never)
     vi.mocked(emitToRoom).mockReset()
+    vi.mocked(getUserInterests).mockReset().mockResolvedValue([])
   })
 
   it('updates allowed fields', async () => {
@@ -204,6 +221,57 @@ describe('profileService.getShareUrl / getProfileForShare', () => {
     await expect(profileService.getProfileForShare('ghost')).rejects.toMatchObject({
       statusCode: 404,
     })
+  })
+})
+
+describe('profileService.setUserInterests', () => {
+  const coffee = { id: 'int-1', name: 'Coffee', icon: '☕' }
+
+  beforeEach(() => {
+    vi.mocked(setUserInterestsInternal)
+      .mockReset()
+      .mockResolvedValue([coffee] as never)
+    vi.mocked(findUserById)
+      .mockReset()
+      .mockResolvedValue(baseUser as never)
+    vi.mocked(emitToRoom).mockReset()
+  })
+
+  it('delegates to the interests service and returns the mapped result', async () => {
+    const result = await profileService.setUserInterests('user-1', ['int-1'])
+
+    expect(setUserInterestsInternal).toHaveBeenCalledWith('user-1', ['int-1'])
+    expect(result).toEqual([coffee])
+  })
+
+  it('emits a profile.updated event with the full profile after setting interests', async () => {
+    await profileService.setUserInterests('user-1', ['int-1'])
+
+    expect(findUserById).toHaveBeenCalledWith('user-1')
+    expect(emitToRoom).toHaveBeenCalledWith(
+      'user:user-1',
+      'profile.updated',
+      expect.objectContaining({ id: 'user-1' }),
+    )
+  })
+
+  it('does not emit when the user cannot be found after the update', async () => {
+    vi.mocked(findUserById).mockResolvedValue(null)
+
+    await profileService.setUserInterests('user-1', ['int-1'])
+
+    expect(emitToRoom).not.toHaveBeenCalled()
+  })
+
+  it('propagates errors from the interests service (e.g. limit exceeded)', async () => {
+    vi.mocked(setUserInterestsInternal).mockRejectedValue(
+      new AppError('You can select up to 3 interests', 400),
+    )
+
+    await expect(
+      profileService.setUserInterests('user-1', ['a', 'b', 'c', 'd']),
+    ).rejects.toMatchObject({ statusCode: 400 })
+    expect(emitToRoom).not.toHaveBeenCalled()
   })
 })
 
