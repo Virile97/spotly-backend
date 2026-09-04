@@ -5,4 +5,5 @@ export const appConfig = {
   nodeEnv: env.nodeEnv,
   corsOrigin: env.corsOrigin,
   spotlyApiKey: env.spotlyApiKey,
+  publicWebBaseUrl: env.publicWebBaseUrl,
 }

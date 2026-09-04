@@ -11,25 +11,32 @@ enum MaritalStatus {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  firstName     String         @map("first_name")
-  middleName    String?        @map("middle_name")
-  lastName      String         @map("last_name")
-  username      String?        @unique
-  gender        Gender
-  birthdate     DateTime
-  contactNo     String?        @map("contact_no")
-  address       String?
-  maritalStatus MaritalStatus? @map("marital_status")
-  isActive      Boolean        @default(true) @map("is_active")
-  bio           String?
-  avatarUrl     String?        @map("avatar_url")
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-  deletedAt     DateTime?      @map("deleted_at")
+  id                 String         @id @default(uuid())
+  firstName          String         @map("first_name")
+  middleName         String?        @map("middle_name")
+  lastName           String         @map("last_name")
+  username           String?        @unique
+  gender             Gender
+  birthdate          DateTime
+  contactNo          String?        @map("contact_no")
+  address            String?
+  maritalStatus      MaritalStatus? @map("marital_status")
+  isActive           Boolean        @default(true) @map("is_active")
+  bio                String?
+  avatarKey          String?        @map("avatar_key")
+  backgroundImageKey String?        @map("background_image_key")
+  followersCount     Int            @default(0) @map("followers_count")
+  followingCount     Int            @default(0) @map("following_count")
+  postsCount         Int            @default(0) @map("posts_count")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+  deletedAt          DateTime?      @map("deleted_at")
 
   loginInfos    UserLoginInfo[]
   refreshTokens RefreshToken[]
+  posts         Post[]
+  followedBy    Follow[]        @relation("Following")
+  following     Follow[]        @relation("Follower")
 
   @@index([deletedAt])
   @@index([isActive])

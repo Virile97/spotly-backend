@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { User } from '../../../database/types'
+import { toPublicImageUrl } from '../../../infrastructure/storage/storage.service'
 import * as authService from '../services/auth.service'
 import { LoginDto } from '../dto/login.dto'
 import { RefreshTokenDto } from '../dto/refresh-token.dto'
@@ -17,7 +18,7 @@ function toUserResponse(user: User) {
     maritalStatus: user.maritalStatus,
     isActive: user.isActive,
     bio: user.bio,
-    avatarUrl: user.avatarUrl,
+    avatarUrl: toPublicImageUrl(user.avatarKey),
   }
 }
 

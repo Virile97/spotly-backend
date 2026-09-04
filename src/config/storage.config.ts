@@ -5,4 +5,6 @@ export const storageConfig = {
   bucket: env.storageBucket,
   accessKeyId: env.storageAccessKeyId,
   secretAccessKey: env.storageSecretAccessKey,
+  publicBaseUrl: env.storagePublicBaseUrl,
+  presignedUploadTtlSeconds: 300,
 }

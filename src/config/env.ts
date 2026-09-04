@@ -28,6 +28,7 @@ export const env = {
   jwtRefreshTtl: requireEnv('JWT_REFRESH_TTL', '30d'),
   emailHashSecret: requireEnv('EMAIL_HASH_SECRET'),
   spotlyApiKey: requireEnv('SPOTLY_API_KEY'),
+  publicWebBaseUrl: requireEnv('PUBLIC_WEB_BASE_URL', 'https://spotly.app'),
   sentryDsn: optionalEnv('SENTRY_DSN'),
   sentryTracesSampleRate: parseFloat(requireEnv('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
   redisUrl: optionalEnv('REDIS_URL'),
@@ -36,6 +37,7 @@ export const env = {
   storageBucket: optionalEnv('STORAGE_BUCKET'),
   storageAccessKeyId: optionalEnv('STORAGE_ACCESS_KEY_ID'),
   storageSecretAccessKey: optionalEnv('STORAGE_SECRET_ACCESS_KEY'),
+  storagePublicBaseUrl: optionalEnv('MEDIA_PUBLIC_BASE_URL') ?? optionalEnv('STORAGE_PUBLIC_BASE_URL'),
   queueRedisUrl: optionalEnv('QUEUE_REDIS_URL'),
 }
 
