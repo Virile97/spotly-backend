@@ -1,4 +1,4 @@
-import { env } from '../bootstrap/env'
+import { env } from './env'
 
 export const databaseConfig = {
   url: env.databaseUrl,

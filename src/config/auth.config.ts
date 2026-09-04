@@ -1,5 +1,5 @@
 import argon2 from 'argon2'
-import { env } from '../bootstrap/env'
+import { env } from './env'
 
 export const authConfig = {
   accessTokenSecret: env.jwtAccessSecret,

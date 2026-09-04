@@ -1,12 +1,12 @@
 import { Request, Response } from 'express'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('../../../../src/modules/auth/auth.service', () => ({
+vi.mock('../../../../src/modules/auth/services/auth.service', () => ({
   register: vi.fn(),
 }))
 
-import * as authController from '../../../../src/modules/auth/auth.controller'
-import * as authService from '../../../../src/modules/auth/auth.service'
+import * as authController from '../../../../src/modules/auth/controllers/auth.controller'
+import * as authService from '../../../../src/modules/auth/services/auth.service'
 
 function mockResponse(): Response {
   const res = {} as Response

@@ -26,7 +26,7 @@ vi.mock('../../../../src/database/transactions/transaction', () => ({
   runInTransaction: vi.fn((fn: (tx: unknown) => unknown) => fn({})),
 }))
 
-vi.mock('../../../../src/modules/auth/auth.repository', () => ({
+vi.mock('../../../../src/modules/auth/repositories/auth.repository', () => ({
   findLoginByEmailHash: vi.fn(),
   createRefreshToken: vi.fn(),
   findRefreshTokenByHash: vi.fn(),
@@ -35,8 +35,8 @@ vi.mock('../../../../src/modules/auth/auth.repository', () => ({
   revokeAllRefreshTokensForUser: vi.fn(),
 }))
 
-import * as authRepository from '../../../../src/modules/auth/auth.repository'
-import * as authService from '../../../../src/modules/auth/auth.service'
+import * as authRepository from '../../../../src/modules/auth/repositories/auth.repository'
+import * as authService from '../../../../src/modules/auth/services/auth.service'
 import { LoginDto } from '../../../../src/modules/auth/dto/login.dto'
 import { AccessTokenPayload } from '../../../../src/modules/auth/types/auth.types'
 

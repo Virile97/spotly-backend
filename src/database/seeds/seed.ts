@@ -1,4 +1,4 @@
-import { logger } from '../../bootstrap/logger'
+import { logger } from '../../shared/utils/logger'
 import { prisma } from '../client'
 
 async function main(): Promise<void> {

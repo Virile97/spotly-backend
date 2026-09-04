@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
-import { logger } from '../bootstrap/logger'
+import { logger } from '../shared/utils/logger'
 import { databaseConfig } from '../config/database.config'
 import { PrismaClient } from './generated/client/client'
 

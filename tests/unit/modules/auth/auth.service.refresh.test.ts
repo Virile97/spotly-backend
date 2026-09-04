@@ -15,19 +15,19 @@ vi.mock('../../../../src/config/auth.config', () => ({
   },
 }))
 
-vi.mock('../../../../src/bootstrap/logger', () => ({
+vi.mock('../../../../src/shared/utils/logger', () => ({
   logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },
 }))
 
-vi.mock('../../../../src/modules/auth/auth.repository', () => ({
+vi.mock('../../../../src/modules/auth/repositories/auth.repository', () => ({
   findRefreshTokenByHash: vi.fn(),
   rotateRefreshToken: vi.fn(),
   revokeRefreshToken: vi.fn(),
   revokeAllRefreshTokensForUser: vi.fn(),
 }))
 
-import * as authRepository from '../../../../src/modules/auth/auth.repository'
-import * as authService from '../../../../src/modules/auth/auth.service'
+import * as authRepository from '../../../../src/modules/auth/repositories/auth.repository'
+import * as authService from '../../../../src/modules/auth/services/auth.service'
 
 const user = {
   id: 'user-1',

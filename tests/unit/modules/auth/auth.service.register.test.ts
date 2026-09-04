@@ -19,25 +19,15 @@ vi.mock('../../../../src/database/transactions/transaction', () => ({
   runInTransaction: vi.fn((fn: (tx: unknown) => unknown) => fn({})),
 }))
 
-vi.mock('../../../../src/modules/auth/auth.repository', () => ({
+vi.mock('../../../../src/modules/auth/repositories/auth.repository', () => ({
   findLoginByEmailHash: vi.fn(),
   findUserByUsername: vi.fn(),
   createUserWithLogin: vi.fn(),
   createRefreshToken: vi.fn(),
 }))
 
-vi.mock('../../../../src/modules/auth/auth.tokens', () => ({
-  issueAccessToken: vi.fn(() => 'access-token'),
-  generateRefreshToken: vi.fn(() => ({
-    token: 'refresh-token',
-    tokenHash: 'refresh-token-hash',
-    expiresAt: new Date('2099-01-01'),
-  })),
-  hashRefreshToken: vi.fn((token: string) => `hash(${token})`),
-}))
-
-import * as authRepository from '../../../../src/modules/auth/auth.repository'
-import * as authService from '../../../../src/modules/auth/auth.service'
+import * as authRepository from '../../../../src/modules/auth/repositories/auth.repository'
+import * as authService from '../../../../src/modules/auth/services/auth.service'
 import { RegisterDto } from '../../../../src/modules/auth/dto/register.dto'
 import { AppError } from '../../../../src/shared/errors/app-error'
 import { Prisma } from '../../../../src/database/types'
@@ -86,7 +76,8 @@ describe('authService.register', () => {
     const result = await authService.register(baseDto)
 
     expect(result.user).toEqual(createdUser)
-    expect(result.tokens).toEqual({ accessToken: 'access-token', refreshToken: 'refresh-token' })
+    expect(result.tokens.accessToken).toEqual(expect.any(String))
+    expect(result.tokens.refreshToken).toEqual(expect.any(String))
   })
 
   it('never passes the plain-text password to the repository', async () => {
