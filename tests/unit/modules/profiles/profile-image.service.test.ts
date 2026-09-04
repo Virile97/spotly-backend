@@ -5,15 +5,39 @@ vi.mock('../../../../src/infrastructure/storage/storage.service', () => ({
   isAllowedImageContentType: vi.fn((contentType: string) =>
     ['image/jpeg', 'image/png', 'image/webp'].includes(contentType),
   ),
+  toPublicImageUrl: vi.fn((key: string | null) => (key ? `https://cdn.example.com/${key}` : null)),
+}))
+
+vi.mock('../../../../src/infrastructure/websocket/socket-emitter', () => ({
+  emitToRoom: vi.fn(),
 }))
 
 vi.mock('../../../../src/modules/profiles/repositories/profile.repository', () => ({
   updateProfileImage: vi.fn(),
 }))
 
+import { emitToRoom } from '../../../../src/infrastructure/websocket/socket-emitter'
 import * as storageService from '../../../../src/infrastructure/storage/storage.service'
 import * as profileRepository from '../../../../src/modules/profiles/repositories/profile.repository'
 import * as profileImageService from '../../../../src/modules/profiles/services/profile-image.service'
+
+const baseUser = {
+  id: 'user-1',
+  username: 'alice_doe',
+  firstName: 'Alice',
+  middleName: null,
+  lastName: 'Doe',
+  bio: null,
+  avatarKey: null,
+  backgroundImageKey: null,
+  followersCount: 0,
+  followingCount: 0,
+  postsCount: 0,
+  isActive: true,
+  createdAt: new Date('2026-01-01'),
+  updatedAt: new Date(),
+  deletedAt: null,
+}
 
 describe('profileImageService.requestImageUploadUrl', () => {
   beforeEach(() => {
@@ -66,7 +90,8 @@ describe('profileImageService.confirmImageUpload', () => {
   beforeEach(() => {
     vi.mocked(profileRepository.updateProfileImage)
       .mockReset()
-      .mockResolvedValue({ id: 'user-1' } as never)
+      .mockResolvedValue(baseUser as never)
+    vi.mocked(emitToRoom).mockReset()
   })
 
   it('saves the key to avatarKey when confirming an avatar upload', async () => {
@@ -92,6 +117,19 @@ describe('profileImageService.confirmImageUpload', () => {
       'user-1',
       'backgroundImageKey',
       'backgrounds/user-1/abc.jpg',
+    )
+  })
+
+  it('emits a profile.updated event to the user room after confirming', async () => {
+    await profileImageService.confirmImageUpload('user-1', {
+      type: 'avatar',
+      key: 'avatars/user-1/abc.jpg',
+    })
+
+    expect(emitToRoom).toHaveBeenCalledWith(
+      'user:user-1',
+      'profile.updated',
+      expect.objectContaining({ id: 'user-1' }),
     )
   })
 

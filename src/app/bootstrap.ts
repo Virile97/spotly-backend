@@ -5,6 +5,7 @@ import { connectDatabase, disconnectDatabase } from '../infrastructure/database/
 import { disconnectRedis } from '../infrastructure/redis/redis.client'
 import { createSocketServer } from '../infrastructure/websocket/socket.server'
 import { attachRedisAdapter } from '../infrastructure/websocket/socket.redis-adapter'
+import { setSocketServer } from '../infrastructure/websocket/socket-emitter'
 import { registerMessagingGateway } from '../modules/messaging'
 import { captureError, initSentry } from '../shared/utils/sentry'
 import { logger } from '../shared/utils/logger'
@@ -20,6 +21,7 @@ export async function bootstrap(): Promise<void> {
 
   const io = createSocketServer(httpServer)
   await attachRedisAdapter(io)
+  setSocketServer(io)
   registerMessagingGateway(io)
 
   const server = httpServer.listen(appConfig.port, () => {

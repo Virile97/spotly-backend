@@ -3,11 +3,15 @@ import {
   isAllowedImageContentType,
   PresignedUpload,
 } from '../../../infrastructure/storage/storage.service'
+import { emitToRoom } from '../../../infrastructure/websocket/socket-emitter'
 import { User } from '../../../database/types'
+import { userRoom } from '../../messaging/socket/socket.rooms'
 import { AppError } from '../../../shared/errors/app-error'
 import * as profileRepository from '../repositories/profile.repository'
 import { ImageUploadUrlDto } from '../dto/image-upload-url.dto'
 import { ConfirmImageDto } from '../dto/confirm-image.dto'
+import { ProfileSocketEvent } from './profile.events'
+import { toProfileResponse } from './profile.service'
 
 const FOLDER_BY_TYPE: Record<ImageUploadUrlDto['type'], string> = {
   avatar: 'avatars',
@@ -41,5 +45,9 @@ export async function confirmImageUpload(userId: string, dto: ConfirmImageDto): 
     throw new AppError('Image key does not belong to this user/type', 400)
   }
 
-  return profileRepository.updateProfileImage(userId, field, dto.key)
+  const user = await profileRepository.updateProfileImage(userId, field, dto.key)
+
+  emitToRoom(userRoom(userId), ProfileSocketEvent.ProfileUpdated, toProfileResponse(user))
+
+  return user
 }

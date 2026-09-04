@@ -8,12 +8,17 @@ vi.mock('../../../../src/infrastructure/storage/storage.service', () => ({
   toPublicImageUrl: vi.fn((key: string | null) => (key ? `https://cdn.example.com/${key}` : null)),
 }))
 
+vi.mock('../../../../src/infrastructure/websocket/socket-emitter', () => ({
+  emitToRoom: vi.fn(),
+}))
+
 vi.mock('../../../../src/modules/profiles/repositories/profile.repository', () => ({
   findProfileByUsername: vi.fn(),
   findUserByUsernameExcludingId: vi.fn(),
   updateProfile: vi.fn(),
 }))
 
+import { emitToRoom } from '../../../../src/infrastructure/websocket/socket-emitter'
 import * as profileRepository from '../../../../src/modules/profiles/repositories/profile.repository'
 import * as profileService from '../../../../src/modules/profiles/services/profile.service'
 import { AppError } from '../../../../src/shared/errors/app-error'
@@ -106,6 +111,7 @@ describe('profileService.updateProfile', () => {
     vi.mocked(profileRepository.updateProfile)
       .mockReset()
       .mockResolvedValue(baseUser as never)
+    vi.mocked(emitToRoom).mockReset()
   })
 
   it('updates allowed fields', async () => {
@@ -113,6 +119,26 @@ describe('profileService.updateProfile', () => {
 
     expect(profileRepository.updateProfile).toHaveBeenCalledWith('user-1', { bio: 'new bio' })
     expect(result).toEqual(baseUser)
+  })
+
+  it('emits a profile.updated event to the user room with the updated profile', async () => {
+    await profileService.updateProfile('user-1', { bio: 'new bio' })
+
+    expect(emitToRoom).toHaveBeenCalledWith(
+      'user:user-1',
+      'profile.updated',
+      expect.objectContaining({ id: 'user-1', bio: 'hello world' }),
+    )
+  })
+
+  it('does not emit when the update is rejected for a duplicate username', async () => {
+    vi.mocked(profileRepository.findUserByUsernameExcludingId).mockResolvedValue(baseUser as never)
+
+    await expect(
+      profileService.updateProfile('user-1', { username: 'taken_handle' }),
+    ).rejects.toBeDefined()
+
+    expect(emitToRoom).not.toHaveBeenCalled()
   })
 
   it('checks username availability excluding the current user when username is provided', async () => {

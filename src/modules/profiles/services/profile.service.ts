@@ -1,9 +1,12 @@
 import { appConfig } from '../../../config/app.config'
 import { User } from '../../../database/types'
+import { emitToRoom } from '../../../infrastructure/websocket/socket-emitter'
 import { toPublicImageUrl } from '../../../infrastructure/storage/storage.service'
+import { userRoom } from '../../messaging/socket/socket.rooms'
 import { AppError } from '../../../shared/errors/app-error'
 import * as profileRepository from '../repositories/profile.repository'
 import { UpdateProfileDto } from '../dto/update-profile.dto'
+import { ProfileSocketEvent } from './profile.events'
 
 export interface ProfileResponse {
   id: string
@@ -55,7 +58,11 @@ export async function updateProfile(userId: string, dto: UpdateProfileDto): Prom
     }
   }
 
-  return profileRepository.updateProfile(userId, dto)
+  const user = await profileRepository.updateProfile(userId, dto)
+
+  emitToRoom(userRoom(userId), ProfileSocketEvent.ProfileUpdated, toProfileResponse(user))
+
+  return user
 }
 
 export function getShareUrl(username: string): { url: string } {
